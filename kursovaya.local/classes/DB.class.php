@@ -9,6 +9,7 @@ class DB
     private $dbconn3;
     private $stat;
     private $tb_name = "";
+    private $sql = "";
     function __construct(string $dbname){
         $this->dbname = $dbname;
         $this->dbconn3 = pg_connect("host=".$this->host." port=".$this->port." dbname=".$this->dbname." user=".$this->user." password=".$this->password);
@@ -27,7 +28,26 @@ class DB
             $row = str_replace("\N", "", $row);
             echo '<br>'.$row;
         }
-        pg_close($this->dbconn3);
     }
+    function selectTable(string $tablename, string $columns, string $numstring){
+        $this->tb_name = $tablename;
+        $this->sql = "select ".$columns." from ".$this->tb_name." limit ".$numstring.";";
+        echo $this->sql;
+        $result = pg_query($this->dbconn3, $this->sql);
+        var_dump($result);
+        if (!$result) {
+            die("Произошла ошибка чтения таблицы");
+        }
+        else{
+            header('Content-Type = application/json; charset = utf-8');
+                $arr = [];
+                while($row = pg_fetch_array($result)){
+                    $arr[]=$row;
+                }
+            echo '<br>'.json_encode($arr);
+        }
+    }
+
+
 }
 ?>

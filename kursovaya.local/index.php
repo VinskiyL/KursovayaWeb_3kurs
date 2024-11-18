@@ -17,4 +17,6 @@ if(isset($_GET["age"])){
     $age = $_GET["age"];
 }
 echo "<br> Имя: $name <br> Возраст: $age";
+echo "<br> Запрос select <br>";
+$dbconn3->selectTable($tb_name, "*", "3");
 ?>
