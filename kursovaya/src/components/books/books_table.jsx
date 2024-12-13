@@ -50,7 +50,9 @@ const Books = () => {
                     <div key={book.index}>
                         <h3>{book.title}</h3>
                         <p>{book.information_publication}</p>
-                        <Link to={`/books_info/:${book.index}`}>Подробнее</Link>
+                        <Link to={`/books_info/${book.index}`}>
+                            Подробнее
+                        </Link>
                     </div>
                 ))
             ) : (

@@ -24,7 +24,7 @@ return(
                 <Route path = "/" element = {<MainContent/>}/>
                 <Route path = "/info" element = {<AboutMe/>}/>
                 <Route path = "/login" element = {<Login/>}/>
-                <Route path = "/profile:user" element = {<Prof/>}/>
+                <Route path = "/profile/:user" element = {<Prof/>}/>
                 <Route path = "/authors_table" element = {<Authors/>}/>
                 <Route path = "/books_table" element = {<Books/>}/>
                 <Route path = "/books_info/:index" element = {<Books_info/>}/>

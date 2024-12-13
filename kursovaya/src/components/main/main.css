@@ -101,7 +101,7 @@
         font-size: 16px; /* Размер шрифта */
     }
 
-    .search-button {
+    .search-button, .in-button {
         background: none; /* Убираем фон кнопки */
         border: none; /* Убираем границу кнопки */
         cursor: pointer; /* Курсор при наведении */
@@ -109,9 +109,13 @@
         transition: all 0.3s ease-in-out;
     }
 
-    .search-button:hover{
+    .in-button:hover{
         transform: scale(1.1);
     }
+
+    .search-button:hover{
+            transform: scale(1.1);
+        }
 
     .search-icon {
         width: 24px; /* Ширина иконки */

@@ -51,7 +51,7 @@ const Authors = () => {
                         <h3>{author.author_surname}</h3>
                         <h3>{author.author_name}</h3>
                         <h3>{author.author_patronymic}</h3>
-                        <Link to={`/authors_info/:${author.id}`}>Подробнее</Link>
+                        <Link to={`/authors_info/${author.id}`}>Подробнее</Link>
                     </div>
                 ))
             ) : (

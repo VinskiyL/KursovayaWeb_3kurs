@@ -18,6 +18,46 @@ class DB
           die("Соединение не было установлено");
         }
     }
+
+    function saveToken(string $username, string $jwt) {
+        // Экранируем входные данные для предотвращения SQL инъекций
+        $username = pg_escape_string($conn, $username);
+        $jwt = pg_escape_string($conn, $jwt);
+
+        // Формируем SQL-запрос для обновления токена
+        $query = "UPDATE Users_catalog SET token = '$jwt' WHERE username = '$username'";
+
+        // Выполняем запрос
+        $result = pg_query($conn, $query);
+
+        if (!$result) {
+            echo "Ошибка выполнения запроса: " . pg_last_error($conn) . "\n";
+        } else {
+            echo "Токен успешно сохранен.\n";
+        }
+    }
+
+
+    function login(string $username) {
+        try {
+            // Подготовка SQL-запроса с параметрами
+            $this->sql = 'SELECT * FROM kursovaya."Users_catalog" WHERE username = $1';
+            $result = pg_prepare($this->dbconn3, "login_query", $this->sql);
+
+            // Выполнение подготовленного запроса
+            $result = pg_execute($this->dbconn3, "login_query", array($username));
+
+            if ($result) {
+                return pg_fetch_all($result) ?: []; // Возвращаем результаты или пустой массив
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            echo "Ошибка подключения: " . $e->getMessage();
+            return [];
+        }
+    }
+
     function selectTable(string $query){
         try {
             $keywords = explode(" ", $query);
