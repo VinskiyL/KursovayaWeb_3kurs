@@ -75,13 +75,13 @@ const Order = () =>{
                 </Link>
                 {filteredResults.length > 0 ? (
                     filteredResults.map((order) => (
-                        <div key={order.id} className = "result_order">
+                        <div key={order.id} className = "result_">
                             <h3 className = "h_result">Код заказа {order.id}</h3>
                             <p className = "h_result">Название книги: {order.title}</p>
                             <p className = "h_result">Фамилия автора: {order.author_surname}</p>
                             <p className = "h_result">Имя автора: {order.author_name}</p>
                             <p className = "h_result">Отчество автора: {order.author_patronymic}</p>
-                            <p className = "h_result">Количество книг: {order.quantity}</p>
+                            <p className = "h_result">Количество книг: {order.quantyti}</p>
                             <p className = "h_result">Дата публикации: {order.date_publication}</p>
                             <button onClick={() => handleOrder(order.id)} className = "main_order-button">Отменить заказ</button>
                         </div>

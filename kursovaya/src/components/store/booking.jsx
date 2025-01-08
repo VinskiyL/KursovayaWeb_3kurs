@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Booking = () =>{
-    const [query, setQuery] = useState('bc.index,title,information_publication,cover kursovaya."Books_catalog"');
-        const [results, setResults] = useState([]);
-        const [error, setError] = useState('');
-        const [searchTerm, setSearchTerm] = useState(''); // Состояние для поиска
+    const [query, setQuery] = useState('bc.index,title,information_publication,quantity,date_issue,date_return,b.id kursovaya."Books_catalog"');
+    const [results, setResults] = useState([]);
+    const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState(''); // Состояние для поиска
 
         const fetchData = async () => {
             setError('');
@@ -59,7 +59,7 @@ const Booking = () =>{
         );
 
         return (
-            <div>
+            <div className = "main_order_container">
                 <input
                     type="text"
                     placeholder="Поиск по названию книги..."
@@ -67,15 +67,21 @@ const Booking = () =>{
                     onChange={handleSearchChange}
                 />
                 {filteredResults.length > 0 ? (
-                    filteredResults.map((book) => (
-                        <div key={book.index}>
-                            <h3>{book.title}</h3>
-                            <p>{book.information_publication}</p>
-                            <button onClick={() => handleBooking(book.index)}>Отменить бронирование</button>
-                        </div>
-                    ))
+                    filteredResults.map((book) => {
+                        return (
+                            <div key={book.id} className = "result_">
+                                <h3 className = "h_result">Номер брони: {book.id}</h3>
+                                <p className = "h_result">Название книги: {book.title}</p>
+                                <p className = "h_result">Информация об издании: {book.information_publication}</p>
+                                <p className = "h_result">Количество книг: {book.quantity}</p>
+                                <p className = "h_result">Дата бронирования: {book.date_issue}</p>
+                                <p className = "h_result">Дата возврата: {book.date_return}</p>
+                                <button onClick={() => handleBooking(book.index)} className = "main_order-button">Отменить бронирование</button>
+                            </div>
+                        );
+                    })
                 ) : (
-                    <p>Книги не найдены.</p>
+                    <p className = "h_result">Брони не найдены.</p>
                 )}
             </div>
         );

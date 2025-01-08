@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import imgSearch from './search.png'; // Убедитесь, что путь к изображению правильный
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const Search = () => {
     const [query, setQuery] = useState('');
@@ -61,31 +62,41 @@ const Search = () => {
                 </button>
             </form>
             {error && <p className = "h_result">{error}</p>}
-            {results.length > 0 && (
+            {results.length > 0 &&
                 <div className = "result_search">
                     {results.map((result) => (
-                        <>
-                        {result.title &&(
-                        <div className = "result_books" key={result.index}>
-                            <h2 className = "h_result">Книга:</h2>
-                            <p className = "h_result">{result.title}</p>
-                            <p className = "h_result">{result.place_publication}</p>
-                            <p className = "h_result">{result.date_publication}</p>
-                            {isAuthenticated && <button onClick={() => handleBooking(book.index)}>Забронировать</button>}
+                        <div key={result.length + result.index + result.id}>
+                            {result.title &&
+                                <div className = "result_" key={result.index}>
+                                    <h2 className = "h_result">Книга:</h2>
+                                    <h3 className = "h_result">{result.title}</h3>
+                                    <p className = "h_result">Информация об издании: {result.information_publication}</p>
+                                    <p className = "h_result">Дата публикации: {result.date_publication}</p>
+                                    <Link to={`/books_info/${result.index}`} className = "table--order">
+                                       <div className = "order">
+                                           <h2 className = "h2--order">Подробнее</h2>
+                                       </div>
+                                    </Link>
+                                    {isAuthenticated &&
+                                        <button onClick={() => handleBooking(result.index)} className = "main_order-button">Забронировать</button>
+                                    }
+                                </div>
+                            }
+                            {result.author_surname &&
+                                <div className = "result_" key={result.id + result.length}>
+                                    <h2 className = "h_result">Автор:</h2>
+                                    <h3 className = "h_result">{result.author_surname} {result.author_name} {result.author_patronymic}</h3>
+                                    <Link to={`/authors_info/${result.id}`} className = "table--order">
+                                        <div className = "order">
+                                            <h2 className = "h2--order">Подробнее</h2>
+                                        </div>
+                                    </Link>
+                                </div>
+                            }
                         </div>
-                        )}
-                        {result.author_surname &&(
-                        <div className = "result_authors" key={result.id}>
-                            <h2 className = "h_result">Автор:</h2>
-                            <p className = "h_result">{result.author_surname}</p>
-                            <p className = "h_result">{result.author_name}</p>
-                            <p className = "h_result">{result.author_patronymic}</p>
-                        </div>
-                        )}
-                        </>
                     ))}
                 </div>
-            )}
+            }
             {results.length === 0 && !error && <p className = "h_result">Нет результатов для вашего запроса.</p>}
         </div>
     );

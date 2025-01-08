@@ -45,16 +45,6 @@ input[type="date"] {
     gap: 10px; /* Отступ между элементами */
 }
 
-.result_order {
-    border: 2px solid #002137; /* Цвет рамки */
-    border-radius: 8px; /* Закругление углов */
-    padding: 10px; /* Внутренний отступ */
-    margin: 15px 0; /* Отступ снизу для разделения элементов */
-    background-color: #f9f9f9; /* Цвет фона */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Тень для объема */
-    max-width:25%;
-}
-
 .h2--order{
     font-family: 'Poppins', sans-serif;
     font-size: 1.5em;

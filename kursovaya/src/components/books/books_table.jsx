@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Books = () => {
-    const [query, setQuery] = useState('index,title,information_publication,cover kursovaya."Books_catalog"');
+    const [query, setQuery] = useState('index,title,information_publication kursovaya."Books_catalog"');
     const [results, setResults] = useState([]);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState(''); // Состояние для поиска
@@ -38,7 +38,7 @@ const Books = () => {
     );
 
     return (
-        <div>
+        <div className = "main_order_container">
             <input
                 type="text"
                 placeholder="Поиск по названию книги..."
@@ -47,16 +47,19 @@ const Books = () => {
             />
             {filteredResults.length > 0 ? (
                 filteredResults.map((book) => (
-                    <div key={book.index}>
-                        <h3>{book.title}</h3>
-                        <p>{book.information_publication}</p>
-                        <Link to={`/books_info/${book.index}`}>
-                            Подробнее
+                    <div key={book.index} className = "result_">
+                        <h3 className = "h_result">{book.title}</h3>
+                        <p className = "h_result">Информация об издании: {book.information_publication}</p>
+                        <p className = "h_result">Дата публикации: {book.date_publication}</p>
+                        <Link to={`/books_info/${book.index}`} className = "table--order">
+                           <div className = "order">
+                            <h2 className = "h2--order">Подробнее</h2>
+                          </div>
                         </Link>
                     </div>
                 ))
             ) : (
-                <p>Книги не найдены.</p>
+                <p className = "h_result">Книги не найдены.</p>
             )}
         </div>
     );

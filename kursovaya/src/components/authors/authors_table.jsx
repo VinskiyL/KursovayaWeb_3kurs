@@ -38,7 +38,7 @@ const Authors = () => {
     );
 
     return (
-        <div>
+        <div className = "main_order_container">
             <input
                 type="text"
                 placeholder="Поиск по фамилии автора..."
@@ -47,15 +47,17 @@ const Authors = () => {
             />
             {filteredResults.length > 0 ? (
                 filteredResults.map((author) => (
-                    <div key={author.id}>
-                        <h3>{author.author_surname}</h3>
-                        <h3>{author.author_name}</h3>
-                        <h3>{author.author_patronymic}</h3>
-                        <Link to={`/authors_info/${author.id}`}>Подробнее</Link>
+                    <div key={author.id} className = "result_">
+                        <h3 className = "h_result">{author.author_surname} {author.author_name} {author.author_patronymic}</h3>
+                        <Link to={`/authors_info/${author.id}`} className = "table--order">
+                            <div className = "order">
+                                <h2 className = "h2--order">Подробнее</h2>
+                            </div>
+                        </Link>
                     </div>
                 ))
             ) : (
-                <p>Авторы не найдены.</p>
+                <p className = "h_result">Авторы не найдены.</p>
             )}
         </div>
     );

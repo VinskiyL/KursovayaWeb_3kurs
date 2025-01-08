@@ -13,11 +13,15 @@ function Prof(){
             <Search/>
         </div>
         <div className = "b_o">
-            <Link className = "booking" to={'booking'}>
-               <p>Бронирование</p>
+            <Link className = "booking" to={'booking'} className = "table--order">
+               <div className = "order">
+                   <h2 className = "h2--order">Бронирование</h2>
+               </div>
             </Link>
-            <Link className = "order" to={'order'}>
-               <p>Заказы</p>
+            <Link className = "order" to={'order'} className = "table--order">
+               <div className = "order">
+                   <h2 className = "h2--order">Заказы</h2>
+               </div>
             </Link>
         </div>
         <div className = "main_tab">

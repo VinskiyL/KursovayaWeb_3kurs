@@ -339,7 +339,11 @@ class DB
         try {
             $keywords = explode(" ", $query);
 
+            if(count($keywords) > 2){
+                $this->sql = "SELECT $keywords[0] $keywords[1] $keywords[2] FROM $keywords[3] $keywords[4] $keywords[5] $keywords[6] $keywords[7] $keywords[8] $keywords[9] $keywords[10] $keywords[11] $keywords[12] $keywords[13] $keywords[14] $keywords[15] $keywords[16] $keywords[17]";
+            }else{
             $this->sql = "SELECT $keywords[0] FROM $keywords[1] ";
+            }
 
 
             $result = pg_query($this->dbconn3, $this->sql);
@@ -364,12 +368,12 @@ class DB
         try {
             $keywords = explode(" ", $query);
 
-            $this->sql = 'SELECT title, place_publication, date_publication FROM kursovaya."Books_catalog" WHERE ';
+            $this->sql = 'SELECT index, title, information_publication, date_publication FROM kursovaya."Books_catalog" WHERE ';
 
             // Генерируем условия поиска
             $conditions = [];
             foreach ($keywords as $index => $keyword) {
-                $conditions[] = "(title ILIKE $" . ($index + 1) . " OR place_publication ILIKE $" . ($index + 1) . " OR date_publication ILIKE $" . ($index + 1) . ")";
+                $conditions[] = "(title ILIKE $" . ($index + 1) . " OR information_publication ILIKE $" . ($index + 1) . " OR date_publication ILIKE $" . ($index + 1) . ")";
             }
 
             // Объединяем условия с помощью OR
@@ -403,7 +407,7 @@ class DB
     function searchAuthors(string $query) {
         try {
             $keywords = explode(" ", $query);
-            $this->sql = 'SELECT author_surname, author_name, author_patronymic FROM kursovaya."Authors_catalog" WHERE ';
+            $this->sql = 'SELECT id, author_surname, author_name, author_patronymic FROM kursovaya."Authors_catalog" WHERE ';
 
             // Генерируем условия поиска
             $conditions = [];

@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Authors_info = () => {
     const { id } = useParams();
-    const [query, setQuery] = useState('id,author_surname,author_name,author_patronymic kursovaya."Authors_catalog"');
+    const [query, setQuery] = useState('ac.id,ac.author_surname,ac.author_name,ac.author_patronymic,STRING_AGG(b.title,\',\') AS title kursovaya."Authors_catalog" ac JOIN kursovaya."Authors_Books" ab ON ac.id=ab.author_id JOIN kursovaya."Books_catalog" b ON b.index=ab.book_id GROUP BY ac.id,ac.author_surname,ac.author_name,ac.author_patronymic');
     const [authors, setAuthors] = useState([]);
     const [error, setError] = useState('');
 
@@ -43,9 +43,8 @@ const Authors_info = () => {
 
     return (
         <>
-            <p>{author.author_surname}</p>
-            <p>{author.author_name}</p>
-            <p>{author.author_patronymic}</p>
+            <h3 className = "h_result">{author.author_surname} {author.author_name} {author.author_patronymic}</h3>
+            <p className = "h_result">Книги: {author.title}</p>
         </>
     );
 };
