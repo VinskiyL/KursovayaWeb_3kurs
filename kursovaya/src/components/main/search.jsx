@@ -1,11 +1,31 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import imgSearch from './search.png'; // Убедитесь, что путь к изображению правильный
+import { useSelector } from 'react-redux';
 
 const Search = () => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState([]);
     const [error, setError] = useState('');
+    const isAuthenticated = useSelector((state) => state.user.isAuthenticated);
+
+    const handleBooking = async (index) => {
+            try {
+                const response = await axios.get(`https://kursovaya.local/addBooking.php`, {
+                    params: { index }, withCredentials: true,
+                });
+
+                const result = response.data;
+                if (result.success) {
+                    alert('Бронирование успешно!');
+                } else {
+                    alert('Не удалось забронировать. Попробуйте снова.');
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка. Попробуйте позже.');
+            }
+        };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -47,15 +67,16 @@ const Search = () => {
                         <>
                         {result.title &&(
                         <div className = "result_books" key={result.index}>
-                            <h2 className = "h_result">Книги:</h2>
+                            <h2 className = "h_result">Книга:</h2>
                             <p className = "h_result">{result.title}</p>
                             <p className = "h_result">{result.place_publication}</p>
                             <p className = "h_result">{result.date_publication}</p>
+                            {isAuthenticated && <button onClick={() => handleBooking(book.index)}>Забронировать</button>}
                         </div>
                         )}
                         {result.author_surname &&(
                         <div className = "result_authors" key={result.id}>
-                            <h2 className = "h_result">Авторы:</h2>
+                            <h2 className = "h_result">Автор:</h2>
                             <p className = "h_result">{result.author_surname}</p>
                             <p className = "h_result">{result.author_name}</p>
                             <p className = "h_result">{result.author_patronymic}</p>

@@ -1,11 +1,14 @@
 <?php
+
+header('Access-Control-Allow-Methods: GET, PUT, POST, OPTIONS');
+header('Content-Type: application/json');
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Origin: https://localhost:5173');
+header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Укажите заголовки, которые вы хотите разрешить
+
 include './classes/DB.php';
 require 'vendor/autoload.php'; // Убедитесь, что вы установили библиотеку для работы с JWT
-
 use \Firebase\JWT\JWT;
-
-header('Access-Control-Allow-Methods: GET, PUT, POST');
-header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == 'GET') {
     $dbconn3 = new DB("newDB");
@@ -15,36 +18,40 @@ if ($_SERVER["REQUEST_METHOD"] == 'GET') {
     if (!empty($username) && !empty($password)) {
         // Выполняем запрос к базе данных для проверки пользователя
         $result = $dbconn3->login($username);
+
         // Проверяем, существует ли пользователь
-        if ($result->rowCount() > 0) {
+        if (count($result) > 0) {
             // Получаем хеш пароля из базы
-            $user = pg_fetch_assoc($result);
-            $hashedPassword = $user['password']; // Предполагается, что в базе хранятся хеши паролей
+            $user = $result[0]; // Предполагая, что $result - это массив, содержащий строки
+            $hashedPassword = $user['password'];
 
             // Проверяем, совпадает ли введенный пароль с хешом
             if (password_verify($password, $hashedPassword)) {
-                // Успешная аутентификация
-                // Создаем токен
-                $key = "your_secret_key"; // Секретный ключ для подписи токена
+                $jwt = new JWT('your_secret_key');
                 $payload = [
-                    'iat' => time(), // Время создания токена
-                    'exp' => time() + 3600, // Время истечения токена (1 час)
-                    'username' => $username // Пользовательские данные
-                ];
+                       "iat" => time(),
+                       "exp" => time() + 3600, // токен будет действителен 1 час
+                       "sub" => $username
+                   ];
 
-                $jwt = JWT::encode($payload, $key);
+                $token = $jwt->encode($payload);
 
                 // Сохраняем токен в базе данных
-                $stmt = $dbconn3->saveToken($username, $jwt);
-
+                $dbconn3->saveToken($username, $token);
                 $dbconn3->closeConn();
-                // Устанавливаем куку с токеном
-                setcookie("token", $jwt, time() + 3600, "/", "", true, true);
 
-                echo json_encode([
-                    "message" => "Успешно аутентифицированы",
-                    "token" => $jwt // Возвращаем JWT клиенту
+                // Устанавливаем куку с токеном
+                setcookie('token', $token, [
+                    'expires' => time() + 3600,
+                    'path' => '/',
+                    'domain' => '',
+                    'secure' => true,
+                    'httponly' => true, // Убедитесь, что это значение false, если хотите доступ к кукам через JS
+                    'samesite' => 'None'
                 ]);
+
+                // Возвращаем успешный ответ с данными пользователя
+                echo json_encode(['success' => true, 'data' => $result]);
             } else {
                 $error = "Неверный логин или пароль.";
             }
@@ -57,10 +64,11 @@ if ($_SERVER["REQUEST_METHOD"] == 'GET') {
 
     // Если есть ошибка, отправим её в формате JSON
     if (isset($error)) {
-        echo json_encode(["error" => $error]);
+        echo json_encode(["success" => false, "error" => $error]);
     }
 }
 ?>
+
 
 
 

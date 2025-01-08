@@ -23,6 +23,7 @@ function Login() {
                     username: surname,
                     password: password,
                 },
+                         withCredentials: true,
             });
 
             if (response.data.success) {
@@ -32,9 +33,9 @@ function Login() {
                 setError('');
 
                 // Перенаправление на страницу профиля
-                navigate(`/profile/:${surname}`); // Замените на путь к странице профиля
+                navigate(`/`); // Замените на путь к странице профиля
             } else {
-                setError('Неверная фамилия или пароль.');
+                setError('Неверный логин или пароль.');
                 setSuccess('');
             }
         } catch (err) {

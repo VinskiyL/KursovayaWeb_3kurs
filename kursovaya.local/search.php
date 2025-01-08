@@ -1,9 +1,7 @@
 <?php
-
-include './classes/DB.php';
-
 header('Access-Control-Allow-Methods: GET, PUT, POST');
 header('Content-Type: application/json');
+include './classes/DB.php';
 
 if ($_SERVER["REQUEST_METHOD"] === 'GET') {
     $query = $_GET['query'] ?? ''; // Получаем параметр query из URL
