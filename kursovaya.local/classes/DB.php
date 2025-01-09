@@ -11,7 +11,6 @@ class DB
     private $password = "1234";
     private $dbconn3;
     private $stat;
-    private $tb_name = "";
     private $sql = "";
     function __construct(string $dbname){
         $this->dbname = $dbname;
@@ -19,6 +18,116 @@ class DB
         $this->stat = pg_connection_status($this->dbconn3);
         if ($this->stat !== PGSQL_CONNECTION_OK) {
           die("Соединение не было установлено");
+        }
+    }
+
+    function selectComments(string $query){
+        try {
+            $keywords = explode(" ", $query);
+            $this->sql = "SELECT $keywords[0] FROM $keywords[1] $keywords[2] $keywords[3] $keywords[4] $keywords[5] $keywords[6] $keywords[7] $keywords[8] $keywords[9] $keywords[10] $keywords[11]";
+            $result = pg_query($this->dbconn3, $this->sql);
+
+            // Получаем результаты
+            if ($result) {
+                return pg_fetch_all($result) ?: []; // Возвращаем результаты или пустой массив
+            } else {
+                return [];
+            }
+        } catch (Exception $e) {
+            echo "Ошибка подключения: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    function deleteComments(string $id, string $username){
+        // Начинаем транзакцию
+        pg_query($this->dbconn3, "BEGIN");
+        try {
+            // Получаем id пользователя по имени пользователя
+            $query = "SELECT id FROM kursovaya.\"Users_catalog\" WHERE username = $1;";
+            $readerResult = pg_query_params($this->dbconn3, $query, array($username));
+
+            if (!$readerResult) {
+                throw new Exception("Ошибка при получении id пользователя.");
+            }
+
+            $readerRow = pg_fetch_assoc($readerResult);
+            if (!$readerRow) {
+                throw new Exception("Пользователь не найден.");
+            }
+
+            $reader = $readerRow['id']; // Получаем id пользователя
+
+            // Выполняем вставку в таблицу Booking_catalog
+            $query = "DELETE FROM kursovaya.\"Comments\"
+                      WHERE id = $1 and user_id = $2;";
+
+            $result = pg_query_params($this->dbconn3, $query, array($id, $reader));
+
+            if (!$result) {
+                throw new Exception("Ошибка при удалении комментария.");
+            }
+
+            // Подтверждаем транзакцию
+            pg_query($this->dbconn3, "COMMIT");
+
+            return true;
+        } catch (Exception $e) {
+            // Откатываем транзакцию в случае ошибки
+            pg_query($this->dbconn3, "ROLLBACK");
+
+            return false; // Возвращаем false в случае ошибки
+        }
+    }
+
+    function addComments(string $username, string $comment){
+        pg_query($this->dbconn3, "BEGIN");
+        try {
+            // Получаем id пользователя по имени пользователя
+            $query = "SELECT id FROM kursovaya.\"Users_catalog\" WHERE username = $1;";
+            $readerResult = pg_query_params($this->dbconn3, $query, array($username));
+
+            if (!$readerResult) {
+                throw new Exception("Ошибка при получении id пользователя.");
+            }
+
+            $readerRow = pg_fetch_assoc($readerResult);
+            if (!$readerRow) {
+                throw new Exception("Пользователь не найден.");
+            }
+
+            $reader = $readerRow['id']; // Получаем id пользователя
+
+            // Получаем максимальный id из Booking_catalog и увеличиваем его на 1
+            $query = "SELECT COALESCE(MAX(id), 0) + 1 AS new_id FROM kursovaya.\"Comments\";";
+            $idResult = pg_query($this->dbconn3, $query);
+
+            if (!$idResult) {
+                throw new Exception("Ошибка при получении нового id для бронирования.");
+            }
+
+            $idRow = pg_fetch_assoc($idResult);
+            $id = $idRow['new_id']; // Новый id для бронирования
+
+            // Выполняем вставку в таблицу Booking_catalog
+            $query = "INSERT INTO kursovaya.\"Comments\"
+                      VALUES ($1, $2, $3);";
+
+            $result = pg_query_params($this->dbconn3, $query, array($id, $reader, $comment));
+
+            if (!$result) {
+                throw new Exception("Ошибка при добавлении комментария.");
+            }
+
+            // Подтверждаем транзакцию
+            pg_query($this->dbconn3, "COMMIT");
+
+            return true;
+        } catch (Exception $e) {
+            // Откатываем транзакцию в случае ошибки
+            pg_query($this->dbconn3, "ROLLBACK");
+
+            return false; // Возвращаем false в случае ошибки
         }
     }
 
@@ -48,7 +157,7 @@ class DB
             $result = pg_query_params($this->dbconn3, $query, array($id, $reader));
 
             if (!$result) {
-                throw new Exception("Ошибка при добавлении бронирования.");
+                throw new Exception("Ошибка при удалении заказа.");
             }
 
             // Подтверждаем транзакцию
@@ -87,7 +196,7 @@ class DB
             $idResult = pg_query($this->dbconn3, $query);
 
             if (!$idResult) {
-                throw new Exception("Ошибка при получении нового id для бронирования.");
+                throw new Exception("Ошибка при получении нового id для заказа.");
             }
 
             $idRow = pg_fetch_assoc($idResult);
@@ -100,7 +209,7 @@ class DB
             $result = pg_query_params($this->dbconn3, $query, array($id, $title, $surname, $name, $patronymic, $quantity, $reader, $date));
 
             if (!$result) {
-                throw new Exception("Ошибка при добавлении бронирования.");
+                throw new Exception("Ошибка при добавлении заказа.");
             }
 
             // Подтверждаем транзакцию
@@ -177,7 +286,7 @@ class DB
             $result = pg_query_params($this->dbconn3, $query, array($index, $reader));
 
             if (!$result) {
-                throw new Exception("Ошибка при добавлении бронирования.");
+                throw new Exception("Ошибка при удалении бронирования.");
             }
 
             // Подтверждаем транзакцию
@@ -279,28 +388,6 @@ class DB
         } catch (Exception $e) {
             // Можно добавить логирование ошибки здесь
             return [];
-        }
-    }
-
-
-    function checkToken(string $decoded, string $token) {
-        // Проверяем, действителен ли токен
-        if ($decoded->exp > time()) {
-            // Подготовка SQL запроса
-            $this->sql = "SELECT * FROM tokens WHERE token = $1"; // Используем $1 для параметризованного запроса
-            $stmt = pg_prepare($dbconn, "check_query", $this->sql);
-
-            // Выполняем подготовленный запрос с передачей токена
-            $result = pg_execute($dbconn, "check_query", array($token));
-
-            // Проверяем результат выполнения запроса
-            if ($result && pg_num_rows($result) > 0) {
-                return ['success' => true]; // Токен действителен
-            } else {
-                return ['success' => false, 'error' => 'Токен недействителен.'];
-            }
-        } else {
-            return ['success' => false, 'error' => 'Токен истек.'];
         }
     }
 

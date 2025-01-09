@@ -16,6 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import Booking from './components/store/booking';
 import Order from './components/store/order';
 import New from './components/store/new_order';
+import Comments from './components/comments';
 import axios from 'axios'; // Добавлен импорт axios
 import { login, logout } from './components/store/userSlice';
 
@@ -69,6 +70,7 @@ function App() {
                         <Route path="*" element={<Error />} />
                     </Routes>
                 </div>
+                <Comments />
                 <Footer />
             </div>
         </BrowserRouter>
